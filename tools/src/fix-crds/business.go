@@ -1,6 +1,8 @@
 package main
 
 import (
+	_ "embed"
+
 	"fmt"
 	"strings"
 
@@ -18,6 +20,9 @@ var Targets = []string{
 	TargetAPIServerKubectl,
 	TargetInternalValidator,
 }
+
+//go:embed ca-cert.yaml
+var CACertYAML string
 
 // Like apiext.CustomResourceDefinition, but we have a little more
 // control over serialization.
@@ -96,6 +101,26 @@ func FixCRD(args Args, crd *CRD) error {
 	// fix categories
 	if !inArray("ambassador-crds", crd.Spec.Names.Categories) {
 		crd.Spec.Names.Categories = append(crd.Spec.Names.Categories, "ambassador-crds")
+	}
+
+	// Insert conversion.
+	if crd.Spec.Conversion == nil {
+		path := "/crdconvert"
+
+		crd.Spec.Conversion = &apiext.CustomResourceConversion{
+			Strategy: apiext.WebhookConverter,
+			Webhook: &apiext.WebhookConversion{
+				ClientConfig: &apiext.WebhookClientConfig{
+					Service: &apiext.ServiceReference{
+						Name:      "emissary-ingress",
+						Namespace: "emissary",
+						Path:      &path,
+					},
+					CABundle: []byte(CACertYAML),
+				},
+				ConversionReviewVersions: []string{"v1"},
+			},
+		}
 	}
 
 	return nil
