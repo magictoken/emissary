@@ -65,11 +65,11 @@ generate-fast/files += $(OSS_HOME)/pkg/api/getambassador.io/v3alpha1/zz_generate
 # Individual files: YAML
 generate-fast/files += $(OSS_HOME)/manifests/emissary/emissary-crds.yaml
 generate-fast/files += $(OSS_HOME)/manifests/emissary/emissary-ingress.yaml
-generate-fast/files += $(OSS_HOME)/manifests/emissary/ambassador.yaml
+generate-fast/files += $(OSS_HOME)/manifests/emissary/emissary-defaultns.yaml
 generate-fast/files += $(OSS_HOME)/manifests/emissary/ambassador-crds.yaml
 generate-fast/files += $(OSS_HOME)/cmd/entrypoint/crds.yaml
 generate-fast/files += $(OSS_HOME)/docs/yaml/ambassador/ambassador-rbac-prometheus.yaml
-generate-fast/files += $(OSS_HOME)/python/tests/integration/manifests/ambassador.yaml
+generate-fast/files += $(OSS_HOME)/python/tests/integration/manifests/emissary-defaultns.yaml
 generate-fast/files += $(OSS_HOME)/python/tests/integration/manifests/apiext.yaml
 generate-fast/files += $(OSS_HOME)/python/tests/integration/manifests/crds.yaml
 generate-fast/files += $(OSS_HOME)/python/tests/integration/manifests/rbac_cluster_scope.yaml
@@ -472,7 +472,7 @@ python-setup: create-venv
 .PHONY: python-setup
 
 helm-namespace.emissary-ingress = emissary
-helm-namespace.ambassador       = default
+helm-namespace.emissary-defaultns = default
 $(OSS_HOME)/k8s-config/%/helm-expanded.yaml: \
   $(OSS_HOME)/k8s-config/%/values.yaml \
   $(OSS_HOME)/charts/emissary-ingress/templates $(wildcard $(OSS_HOME)/charts/emissary-ingress/templates/*.yaml) \
